@@ -153,7 +153,6 @@ const Live = (props:Props) => {
       // get the cursor position in the canvas
       const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
       const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
-    console.log(x,y,cursorState)
       updateMyPresence({
         cursor: {
           x,
@@ -173,7 +172,6 @@ const Live = (props:Props) => {
 
   // hide the cursor when the mouse is up
   const handlePointerUp = useCallback(() => {
-    console.log("pointer up",cursorState)
     setCursorState((state: CursorState) =>
       cursorState.mode === CursorMode.Reaction
         ? { ...state, isPressed: false }

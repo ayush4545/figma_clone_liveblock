@@ -8,7 +8,7 @@ function ActiveUsers() {
   const users = useOthers();
   const currentUser = useSelf();
   const hasMoreUsers = users.length > 3;
-  console.log(345,users,currentUser)
+
   const memorizedUsers=useMemo(()=>{
     return (
         <div className="flex items-center justify-center gap-1 py-2">
