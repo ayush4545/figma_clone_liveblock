@@ -10,7 +10,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Figma Clone",
+  title: "FigPro",
   description: "A minimalist figma clone using fabric.js and liveblocks for real time collaboration by Ayush Mishra",
 };
 
