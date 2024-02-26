@@ -7,18 +7,30 @@ import {
   useOthers,
 } from "@/liveblocks.config";
 import CursorChat from "./cursor/CursorChat";
-import { CursorMode, CursorState, Reaction, ReactionEvent } from "@/types/type";
+import { CursorMode, CursorState, Reaction } from "@/types/type";
 import ReactionSelector from "./reaction/ReactionSelector";
 import FlyingReaction from "./reaction/FlyingReaction";
 import useInterval from "@/hooks/useInterval";
+import { Comments } from "./comments/Comments";
+
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+import { shortcuts } from "@/constants";
+
 
 type Props={
-  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+  redo: () => void;
+  undo: () => void
 }
 const Live = (props:Props) => {
-  const {canvasRef}=props
-  const others = useOthers();
-  const [{ cursor }, updateMyPresence] = useMyPresence() as any;
+  const {canvasRef,undo,redo}=props
+ 
+  const [{ cursor }, updateMyPresence] = useMyPresence();
 
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
@@ -70,7 +82,7 @@ const Live = (props:Props) => {
    *
    */
   useEventListener((eventData) => {
-    const event = eventData.event as ReactionEvent;
+    const event = eventData.event
     setReactions((reactions) =>
       reactions.concat([
         {
@@ -187,13 +199,36 @@ const Live = (props:Props) => {
     });
   }, []);
 
+  const handleContextMenuClick=useCallback((key:string)=>{
+   switch(key){
+    case 'Chat':
+      setCursorState({
+        mode:CursorMode.Chat,
+        previousMessage:null,
+        message:''
+       })
+       break;
+    case 'Undo':
+      undo();
+      break;
+    case 'Redo':
+      redo();
+      break;
+    case 'Reactions':
+      setCursorState({mode:CursorMode.ReactionSelector})
+      break;
+    default:
+      break;
+   }
+  },[])
   return (
-    <div
+    <ContextMenu>
+       <ContextMenuTrigger
       onPointerMove={handlePointerMove} // these  are mouse pointer events
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      className="relative h-[100vh] w-full flex justify-center items-center text-center"
+      className="relative h-full w-full flex flex-1 justify-center items-center"
       style={{
         cursor:
           cursorState.mode === CursorMode.Chat
@@ -244,8 +279,24 @@ const Live = (props:Props) => {
       )}
 
       {/* Show the live cursors of other users */}
-      <LiveCursors others={others} />
-    </div>
+      <LiveCursors />
+      
+      <Comments/>
+    </ContextMenuTrigger>
+    <ContextMenuContent className="right-menu-content">
+      {shortcuts.map((item)=>(
+         <ContextMenuItem key={item.key} onClick={()=>{
+          handleContextMenuClick(item.name)
+         }} className="right-menu-item">
+         <p>{item.name}</p>
+         <p className="text-xs text-primary-grey-300">{item.shortcut}</p>
+       </ContextMenuItem>
+      ))}
+     
+    </ContextMenuContent>
+
+    </ContextMenu>
+    
   );
 };
 

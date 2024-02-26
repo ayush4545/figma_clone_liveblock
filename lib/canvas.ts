@@ -284,7 +284,7 @@ export const handleCanvasSelectionCreated = ({
 
   // get the selected element
   const selectedElement = options?.selected[0] as fabric.Object;
-
+  console.log("selectedElement",selectedElement)
   // if only one element is selected, set element attributes
   if (selectedElement && options.selected.length === 1) {
     // calculate scaled dimensions of the object
